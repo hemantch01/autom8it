@@ -1,2 +1,2 @@
 # autom8it
-creating triggerbased workflows
+creating triggerbased workflows powered by AI
