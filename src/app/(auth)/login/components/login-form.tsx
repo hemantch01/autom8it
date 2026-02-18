@@ -11,6 +11,7 @@ import { Input } from "@base-ui/react";
 import Link from "next/link";
 import { authClient } from "@/lib/auth-client";
 import { toast } from "sonner";
+import Image from "next/image";
 
 const loginSchema = z.object({
     email: z.email("please enter valid email address"),
@@ -48,7 +49,7 @@ export function LoginForm(){
     };
 
     const isPending = form.formState.isSubmitting;
-    return <div className="flex flex-col gap-6">
+    return <div className="flex flex-col gap-6 w-112.5 my-20 m-auto">
         <Card>
             <CardHeader className="text-center">
                 <CardTitle>
@@ -68,6 +69,7 @@ export function LoginForm(){
                                 className="w-full"
                                 type="button"
                                 disabled={isPending}>
+                                    <Image alt="google_logo" src={"logos/google.svg"} height={20} width={20}/>
                                     Continue with Google
                                 </Button>
                                 <Button 
@@ -75,6 +77,7 @@ export function LoginForm(){
                                 className="w-full"
                                 type="button"
                                 disabled={isPending}>
+                                    <Image alt="github_logo" src={"logos/github.svg"} height={20} width={20}/>
                                     Continue with GitHub
                                 </Button>
                             </div>
