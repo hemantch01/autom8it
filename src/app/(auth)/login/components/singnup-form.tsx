@@ -1,18 +1,20 @@
 "use client";
 
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import {zodResolver} from "@hookform/resolvers/zod"
-import z from "zod";
+import {z} from "zod";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Form, FormControl, FormField, FormItem, FormLabel } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
-import { Input } from "@base-ui/react";
+import { Input } from "@/components/ui/input";
 import Link from "next/link";
+import { authClient } from "@/lib/auth-client";
+import { toast } from "sonner";
 
 const signupSchema = z.object({
-    email: z.email("please enter valid email address"),
-    password:z.string().min(1,"password is required min 5"),
+    email: z.string().email("please enter valid email address"),
+    password:z.string().min(5,"password is required min 5"),
     confirmPassword:z.string()
 }).refine((data)=> data.password===data.confirmPassword,{
     message: "password don't match",
@@ -22,7 +24,7 @@ type SignupFormValues = z.infer<typeof signupSchema>;
 
 
 export function SignupForm(){
-   // const router = useRouter();
+   const router = useRouter();
 
     const form = useForm({
         resolver:zodResolver(signupSchema),
@@ -33,9 +35,26 @@ export function SignupForm(){
         }
     });
 
-    const onSubmit = async (values:SignupFormValues)=>{
-        console.log(values);
-    };
+            const onSubmit = async (values: SignupFormValues) => {
+        try {
+            await authClient.signUp.email(
+            {
+                name:values.email,
+                email: values.email,
+                password: values.password,
+                callbackURL: "/",
+            },
+            {
+                onSuccess: () => router.push("/"),
+                onError: (ctx) => {toast.error(ctx.error.message)},
+            }
+            );
+        } catch (err) {
+            toast.error("Signup failed. Check console.");
+            console.error(err);
+        }
+        };
+
 
     const isPending = form.formState.isSubmitting;
     return <div className="flex flex-col gap-6">
@@ -92,7 +111,7 @@ export function SignupForm(){
                                         <FormLabel>Password</FormLabel>
                                         <FormControl>
                                             <Input
-                                            type="Password"
+                                            type="password"
                                             placeholder="*********"
                                             {...field}/>
                                         </FormControl>
@@ -107,7 +126,7 @@ export function SignupForm(){
                                         <FormLabel>confirmPassword</FormLabel>
                                         <FormControl>
                                             <Input
-                                            type="Password"
+                                            type="password"
                                             placeholder="*********"
                                             {...field}/>
                                         </FormControl>

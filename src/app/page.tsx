@@ -1,16 +1,13 @@
-import prismaClient from "@/lib/db"
+import { authClient } from "@/lib/auth-client";
+import { Button } from "@/components/ui/button";
+import { requireAuth } from "@/lib/auth-utils";
 
-export default async function Home () {
-  const thisb = await prismaClient.user.findFirst({
-    where:{
-      email:"hsemant@gmail.com"
-    }
-  })
- 
+export default  async function Home () {
+  await requireAuth();
   return (
     <div >
   <div>
-    {JSON.stringify(thisb)}
+   Protected Route
   </div>
       
     </div>
