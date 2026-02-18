@@ -9,6 +9,8 @@ import { Form, FormControl, FormField, FormItem, FormLabel } from "@/components/
 import { Button } from "@/components/ui/button";
 import { Input } from "@base-ui/react";
 import Link from "next/link";
+import { authClient } from "@/lib/auth-client";
+import { toast } from "sonner";
 
 const loginSchema = z.object({
     email: z.email("please enter valid email address"),
@@ -30,7 +32,19 @@ export function LoginForm(){
     });
 
     const onSubmit = async (values:LoginFormValues)=>{
-        console.log(values);
+        console.log("hi")
+        await authClient.signIn.email({
+            email:values.email,
+            password:values.password,
+            callbackURL:"/"
+        },{
+            onSuccess:()=>{
+                router.push("/")
+            },
+            onError: (ctx)=>{
+                toast.error(ctx.error.message);
+            }
+        })
     };
 
     const isPending = form.formState.isSubmitting;
@@ -98,7 +112,8 @@ export function LoginForm(){
                                 <Button
                                 type="submit"
                                 className="w-full"
-                                disabled={isPending}>
+                                disabled={isPending}
+                                >
                                     Login
                                 </Button>
                                 <div className="text-center text-sm">

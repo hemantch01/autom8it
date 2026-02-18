@@ -13,7 +13,7 @@ import { authClient } from "@/lib/auth-client";
 import { toast } from "sonner";
 
 const signupSchema = z.object({
-    email: z.string().email("please enter valid email address"),
+    email: z.email("please enter valid email address"),
     password:z.string().min(5,"password is required min 5"),
     confirmPassword:z.string()
 }).refine((data)=> data.password===data.confirmPassword,{
@@ -25,7 +25,6 @@ type SignupFormValues = z.infer<typeof signupSchema>;
 
 export function SignupForm(){
    const router = useRouter();
-
     const form = useForm({
         resolver:zodResolver(signupSchema),
         defaultValues:{

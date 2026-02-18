@@ -3,7 +3,6 @@ import { auth } from "./auth";
 import {redirect} from "next/navigation";
 
 export  const requireAuth  = async ()=>{
-    console.error("hi before seeions")
     const session =  await auth.api.getSession({
         headers: await headers()
     });
