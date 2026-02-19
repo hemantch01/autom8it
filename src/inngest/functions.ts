@@ -1,24 +1,20 @@
 import prismaClient from "@/lib/db";
 import { inngest } from "./client";
-
-export const helloWorld = inngest.createFunction(
-    {id:"hello-words-async"},
-    {event:"test/hello.world"},
+import {generateText} from "ai";
+import { google } from "@ai-sdk/google";
+export const execute = inngest.createFunction(
+    {id:"execute-aiFlow"},
+    {event:"exectue/ai"},
 
     async({event,step})=>{
-        await step.sleep("wait-a-moment",'5s');
-
-        await step.sleep("wait_again","5s");
-
-        await step.run("creating workFlow",async ()=>{
-            await prismaClient.workflow.create({
-            data:{
-                name:"this is queued by inngest function"
-            }
-        })
+      //  await step.sleep("wait-a-moment",'5s');
+        console.log("hit")
+       const response =  await step.ai.wrap("gemini-generate-text",generateText,{
+            model:google("gemini-2.5-flash"),
+            system:"yoii are a helpfull assistant",
+            prompt:"what is 2+2?"
         })
         
-
-        return {message:`hello ${event.data.email}!`};
+        return response.steps;
     }
 );
