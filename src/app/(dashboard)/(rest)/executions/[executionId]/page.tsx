@@ -1,11 +1,16 @@
-const Page = async ({params}:{
-    params: Promise<{
-        executionId:String
-    }>
-})=>{
-    const {executionId} = await params;
+import { requireAuth } from "@/lib/auth-utils";
+
+interface PageProps {
+  params: Promise<{
+    executionId: string;
+  }>
+};
+
+const Page = async ({ params }: PageProps) => {
+    await requireAuth();
+    const { executionId } = await params;
     return <div>
-    execution Id :{executionId}
+        execution Id :{executionId}
     </div>
 }
 

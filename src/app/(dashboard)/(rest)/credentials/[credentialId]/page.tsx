@@ -1,3 +1,4 @@
+import { requireAuth } from "@/lib/auth-utils";
 
 interface paramProps{
     params: Promise<{
@@ -5,6 +6,7 @@ interface paramProps{
     }>
 }
 const Page = async ({params}:paramProps)=>{
+    await requireAuth();
     const {credentialId} = await params;
     return <div>
         credential id: {credentialId}
