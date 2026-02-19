@@ -18,12 +18,16 @@ export default   function Home () {
       toast.error(ctx.message)
     }
   }));
+  const aitest = useMutation(trpc.aitest.mutationOptions());
   
   return (
     <div >
   <div>
    Protected Route
   </div>
+  <Button disabled={aitest.isPending} onClick={()=>{ aitest.mutate()}}>
+    ai test
+  </Button>
   <div>
     {JSON.stringify(data)}
   </div>
