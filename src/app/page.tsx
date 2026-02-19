@@ -5,7 +5,7 @@ import { useTRPC } from "@/trpc/client";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 
-export default   function Home () {
+export default  function Home () {
   const trpc = useTRPC();
   const queryClient = useQueryClient();
   const {data} = useQuery(trpc.getWorkflows.queryOptions());
