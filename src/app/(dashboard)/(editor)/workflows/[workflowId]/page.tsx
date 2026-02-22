@@ -8,7 +8,7 @@ const Page = async ({ params }: {
     await requireAuth();
     const { workflowId } = await params;
     return <div>
-        workflowId : { }
+        workflowId : { workflowId}
     </div>
 }
 
