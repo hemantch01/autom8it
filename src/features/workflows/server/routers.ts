@@ -35,7 +35,7 @@ export const workFlowRouter = createTRPCRouter({
             }
         });
     }),
-    getOne: protectedProcedure
+    getMany: protectedProcedure
     .query(async ({ctx})=>{
         return await prismaClient.workflow.findMany({
             where:{
