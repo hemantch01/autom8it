@@ -1,9 +1,10 @@
 "use client"
-import { EntityContainer, EntityHeader, EntityPagination, EntitySearchComponent } from "@/components/byMe/entity-component";
+import { EmptyView, EntityContainer, EntityHeader, EntityPagination, EntitySearchComponent, ErrorView, LoadingView } from "@/components/byMe/entity-component";
 import { useCreateWorkflow, useSuspenseWorkflows } from "../hooks/use-workflows"
 import React from "react";
 import { useWorkflowsParams } from "../hooks/use-workflows-params";
 import { useEntitySearch } from "../hooks/use-entity-search";
+import { toast } from "sonner";
 
 export const WorkflowsSearch = ()=>{
     const [params,setParams] = useWorkflowsParams();
@@ -21,8 +22,13 @@ export const WorkflowsSearch = ()=>{
     )
 }
 export const WorkFlowsList = ()=>{
-    const workflows = useSuspenseWorkflows();
-
+  const workflows = useSuspenseWorkflows();
+        
+  if(workflows.data.items.length===0){
+    return (
+        <WorkflowsEmpty/>
+    )
+  }
     return (
         <p>
             {JSON.stringify(workflows.data,null,2)}
@@ -80,3 +86,31 @@ export const WorkFlowsContainer = ({children}:{children:React.ReactNode;})=>{
         </EntityContainer>
     )
 }
+
+
+export const WorkflowsLoading = ()=>{
+    return <LoadingView message="Loading workflows..."/>
+}
+
+export const WorkflowsError = ()=>{
+    return <ErrorView message="Error Loading workflows"/>
+}
+
+export const WorkflowsEmpty =()=>{
+    const createWorkflow = useCreateWorkflow();
+    
+    const handleCreate = ()=>{
+        createWorkflow.mutate(undefined,{
+            onError:(error)=>{
+                toast.error(error.message);
+            }
+        })
+    }
+    return (
+        <>
+        <EmptyView onNew={handleCreate} message="You haven't create any workflow yet. Get started by creting you first workflow"/>
+        </>
+    )
+}
+
+

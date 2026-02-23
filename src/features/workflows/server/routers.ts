@@ -53,7 +53,7 @@ export const workFlowRouter = createTRPCRouter({
     )
     .query(async ({ctx,input})=>{
             const [items,totalCount] = await Promise.all([
-                await prismaClient.workflow.findMany({
+                 prismaClient.workflow.findMany({
                     skip: (input.page-1)*input.pageSize,
                     take: input.pageSize,
                     where:{
@@ -67,7 +67,7 @@ export const workFlowRouter = createTRPCRouter({
                         updatedAt:"desc"
                     }
                 }),
-                await prismaClient.workflow.count({
+                 prismaClient.workflow.count({
                     where:{
                         userId: ctx.auth.user.id,
                         name:{
@@ -82,7 +82,6 @@ export const workFlowRouter = createTRPCRouter({
             const totalPages = Math.ceil(totalCount/input.pageSize);
             const hasNextPage = input.page<totalPages;
             const hasPreviousPage = input.page>1;
-
             return {
                 items,
                 page:input.page,

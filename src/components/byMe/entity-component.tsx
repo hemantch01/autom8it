@@ -1,7 +1,16 @@
-import { PlusIcon, SearchIcon } from "lucide-react";
+import { AlertTriangleIcon, Loader2Icon, PackageOpen, PackageOpenIcon, PlusIcon, SearchIcon } from "lucide-react";
 import { Button } from "../ui/button";
 import Link from "next/link";
 import { Input } from "../ui/input";
+import {
+    Empty,
+    EmptyContent,
+    EmptyDescription,
+    EmptyHeader,
+    EmptyMedia,
+    EmptyTitle
+} from "@/components/ui/empty";
+
 
 type EntityHeaderProps = {
     title:string,
@@ -147,5 +156,84 @@ export const EntityPagination = ({
                     </Button>
             </div>
         </div>
+    )
+}
+
+
+interface StateViewProps {
+    message?:string;
+}
+
+
+export const LoadingView  = ({
+    message,
+}:StateViewProps) => {
+    return (
+        <div className="flex justify-center items-center
+    h-full flex-1 flex-col gap-y-4">
+        <Loader2Icon className="size-6 animate-spin text-muted-foreground"/>
+        {!!message &&(
+            <p className="text-sm text-muted-foreground">
+            {message}
+        </p>
+        )}
+
+    </div>
+    )
+};
+
+// error view 
+
+export const ErrorView  = ({
+    message,
+}:StateViewProps) => {
+    return (
+        <div className="flex justify-center items-center
+    h-full flex-1 flex-col gap-y-4">
+        <AlertTriangleIcon className="size-6 text-primary"/>
+        {!!message &&(
+            <p className="text-sm text-muted-foreground">
+            {message}
+        </p>
+        )}
+
+    </div>
+    )
+};
+
+
+// empty workflow state 
+
+interface EmptyViewProps extends StateViewProps{
+    onNew?: ()=> void;
+}
+
+export const EmptyView = ({
+    message,
+    onNew
+}:EmptyViewProps)=>{
+    return (
+        <Empty className="border border-dashed bg-white">
+            <EmptyHeader>
+                <EmptyMedia variant={"icon"}>
+                    <PackageOpenIcon/>
+                </EmptyMedia>
+            </EmptyHeader>
+            <EmptyTitle>
+                No Items
+            </EmptyTitle>
+            {!!message &&(
+                <EmptyDescription>
+                    {message}
+                </EmptyDescription>
+            )}
+             {!!onNew &&(
+                <EmptyContent>
+                   <Button onClick={onNew}>
+                    Add item
+                   </Button>
+                </EmptyContent>
+            )}
+        </Empty>
     )
 }
