@@ -3,7 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { TRPCReactProvider } from "@/trpc/client";
 import { Toaster } from "sonner";
-
+import {NuqsAdapter} from "nuqs/adapters/next/app"
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -28,9 +28,12 @@ export default function RootLayout({
     <html lang="en">
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      ><TRPCReactProvider>
+      >
+      <TRPCReactProvider>
+        <NuqsAdapter>
         <Toaster/>
         {children}
+        </NuqsAdapter>
       </TRPCReactProvider>
       </body>
     </html>
