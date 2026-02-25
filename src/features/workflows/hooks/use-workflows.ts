@@ -3,7 +3,7 @@
 // hook to fetch all workflows using suspense
 
 import { useTRPC } from "@/trpc/client"
-import {  useMutation,  useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
+import {  useMutation,  useQuery,  useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { useWorkflowsParams } from "./use-workflows-params";
@@ -39,7 +39,7 @@ export const useCreateWorkflow  =()=>{
 
 export const useRemoveWorkflow = ()=> {
     const trpc = useTRPC();
-const queryClient  = useQueryClient();
+    const queryClient  = useQueryClient();
     
     return useMutation(trpc.workflow.remove.mutationOptions({
         onSuccess: (data)=>{
@@ -55,4 +55,10 @@ const queryClient  = useQueryClient();
             // )
         }
     }))
+}
+
+export const useSuspenseWorkflow = (id:string)=>{
+    const trpc = useTRPC(); 
+    return useSuspenseQuery(trpc.workflow.getOne.queryOptions({id}));
+
 }
