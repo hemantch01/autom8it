@@ -1,11 +1,13 @@
 "use client"
-import { EmptyView, EntityContainer, EntityHeader, EntityPagination, EntitySearchComponent, ErrorView, LoadingView } from "@/components/byMe/entity-component";
-import { useCreateWorkflow, useSuspenseWorkflows } from "../hooks/use-workflows"
+import { EmptyView, EntityContainer, EntityHeader, EntityItem, EntityList, EntityPagination, EntitySearchComponent, ErrorView, LoadingView } from "@/components/byMe/entity-component";
+import { useCreateWorkflow, useRemoveWorkflow, useSuspenseWorkflows } from "../hooks/use-workflows"
 import React from "react";
 import { useWorkflowsParams } from "../hooks/use-workflows-params";
 import { useEntitySearch } from "../hooks/use-entity-search";
 import { toast } from "sonner";
-
+import type {Workflow as workflowType} from "@/generated/prisma/client"
+import { WorkflowIcon } from "lucide-react";
+import { formatDistanceToNow } from "date-fns";
 export const WorkflowsSearch = ()=>{
     const [params,setParams] = useWorkflowsParams();
      
@@ -24,15 +26,13 @@ export const WorkflowsSearch = ()=>{
 export const WorkFlowsList = ()=>{
   const workflows = useSuspenseWorkflows();
         
-  if(workflows.data.items.length===0){
     return (
-        <WorkflowsEmpty/>
-    )
-  }
-    return (
-        <p>
-            {JSON.stringify(workflows.data,null,2)}
-        </p>
+    <EntityList
+    items={workflows.data.items}
+    getKey={(workflows)=>workflows.id}
+    renderItem={(workflow)=> <WorkflowItem data={workflow}/>}
+    emptyView = {<WorkflowsEmpty/>}
+    />
     )
 }
 
@@ -108,8 +108,40 @@ export const WorkflowsEmpty =()=>{
     }
     return (
         <>
-        <EmptyView onNew={handleCreate} message="You haven't create any workflow yet. Get started by creting you first workflow"/>
+        <EmptyView onNew={handleCreate} message="You haven't create any workflow yet. Get started by creating a workflow"/>
         </>
+    )
+}
+
+
+export const WorkflowItem = ({
+    data
+}:{data:workflowType})=>{
+        
+    const removeWorkflow = useRemoveWorkflow();
+
+    const handleRemove = ()=>{
+        removeWorkflow.mutate({id:data.id})
+    }
+    
+    return (
+        <EntityItem
+        href={`/workflows/${data.id}`}
+        title={data.name}
+        subtitle={
+            <>
+            updated {formatDistanceToNow(data.updatedAt,{addSuffix:true})}{" "}
+            &bull; created {formatDistanceToNow(data.createdAt,{addSuffix:true})}{" "}
+            </>
+        }
+        image={
+            <div className="size-8 flex items-center justify-center">
+                <WorkflowIcon className="size-5 text-muted-foreground"/>
+            </div>
+        }
+        onRemove={handleRemove}
+        isRemoving= {removeWorkflow.isPending}
+        />
     )
 }
 
