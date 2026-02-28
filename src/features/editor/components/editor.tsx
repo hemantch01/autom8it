@@ -12,7 +12,8 @@ import {
     NodeChange,
     EdgeChange,
     Connection,
-    Background
+    Background,
+    Controls
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css"
 import { useCallback, useState } from "react";
@@ -52,8 +53,8 @@ const initialEdges = [
 export const Editor = ({workflowId}:{workflowId:string})=>{
     const { data: workflow} = useSuspenseWorkflow(workflowId);
     
-    const [nodes, setNodes]  = useState<Node[]>(initialNodes);
-    const [edges, setEdges] = useState<Edge[]>(initialEdges);
+    const [nodes, setNodes]  = useState<Node[]>(workflow.nodes);
+    const [edges, setEdges] = useState<Edge[]>(workflow.edges);
    const onNodesChange = useCallback(
         (changes:NodeChange[])=> setNodes(
             (nodeSnapShot)=> applyNodeChanges(changes,nodeSnapShot)
@@ -81,6 +82,7 @@ export const Editor = ({workflowId}:{workflowId:string})=>{
             fitView
             >
                 <Background/>
+                <Controls/>
             </ReactFlow>
         </div>
     )

@@ -76,6 +76,49 @@ model Workflow {
    name String
    createdAt DateTime @default(now())
    updatedAt DateTime @updatedAt  
+  
+   nodes Node[]
+   connections Connections[]
    userId String
    user User @relation(fields: [userId],references: [id],onDelete: Cascade)
+}
+
+enum NodeType{
+  INITIAL
+}
+model Node{
+  id String @id @default(cuid())
+  name String 
+  type NodeType
+  position Json
+  data Json @default("{}")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  outputConnections Connections[] @relation("fromNode")
+  inputConnections Connections[] @relation("toNode")
+
+  workflowId String
+  workflow Workflow @relation(fields: [workflowId], references: [id], onDelete: Cascade) 
+}
+
+// for edges
+model Connections {
+  id String @id @default(cuid())
+  workflowId String
+  workflow Workflow @relation(fields: [workflowId],references: [id], onDelete: Cascade)
+
+  fromNodeId String
+  fromNode Node @relation("fromNode", fields: [fromNodeId], references: [id],onDelete: Cascade)
+
+  toNodeId String
+  toNode Node @relation("toNode", fields: [toNodeId],references: [id],onDelete: Cascade)
+
+  fromOutput String @default("main")
+  toInput String @default("main")
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([fromNodeId,toNodeId,fromOutput,toInput])
 }
