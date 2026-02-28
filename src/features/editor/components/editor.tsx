@@ -1,6 +1,8 @@
 "use client"
 
 import { ErrorView, LoadingView } from "@/components/byMe/entity-component";
+import { AddNodeButton } from "@/components/react-flow/add-node-button";
+import { nodeComponents } from "@/config/node_components";
 import { useSuspenseWorkflow } from "@/features/workflows/hooks/use-workflows";
 import {
     ReactFlow,
@@ -17,6 +19,7 @@ import {
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css"
 import { useCallback, useState } from "react";
+import { Panel } from "@xyflow/react";
 
 export const EditorLoading = ()=>{
     return <LoadingView message="Loading editor..."/>
@@ -79,10 +82,14 @@ export const Editor = ({workflowId}:{workflowId:string})=>{
             onNodesChange={onNodesChange}
             onEdgesChange={onEdgesChange}
             onConnect={onConnect}
+            nodeTypes={nodeComponents}
             fitView
             >
                 <Background/>
                 <Controls/>
+                <Panel position="top-right">
+                    <AddNodeButton/>
+                </Panel>
             </ReactFlow>
         </div>
     )
