@@ -56,6 +56,7 @@ export const useRemoveWorkflow = ()=> {
         }
     }))
 }
+
 // update workflow Name 
 export const useUpateWorkflowName  =()=>{
    const queryClient = useQueryClient();
@@ -64,6 +65,24 @@ export const useUpateWorkflowName  =()=>{
     trpc.workflow.updateName.mutationOptions({
         onSuccess:(data)=>{
             toast.success(`Workflow "${data.name}" updated`);
+            queryClient.invalidateQueries(trpc.workflow.getMany.queryOptions({}));
+            queryClient.invalidateQueries(trpc.workflow.getOne.queryOptions({id:data.id}));
+        },
+        onError:(err)=>{
+            toast.error(`failed to update workflows ${err.message}`);
+        },
+    }));
+}
+
+// hook to update a workflow
+// update workflow Name 
+export const useUpateWorkflow  =()=>{
+   const queryClient = useQueryClient();
+   const trpc = useTRPC();
+   return useMutation(
+    trpc.workflow.update.mutationOptions({
+        onSuccess:(data)=>{
+            toast.success(`Workflow "${data.name}" saved`);
             queryClient.invalidateQueries(trpc.workflow.getMany.queryOptions({}));
             queryClient.invalidateQueries(trpc.workflow.getOne.queryOptions({id:data.id}));
         },

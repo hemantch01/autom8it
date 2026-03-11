@@ -46,6 +46,78 @@ export const workFlowRouter = createTRPCRouter({
             }
         });
     }),
+    update: protectedProcedure
+    .input(z.object({
+        // this id is workflow id
+        id:z.string(),
+        nodes:z.array(
+            z.object({
+                id:z.string(),
+                type:z.string().nullish(),
+                position:z.object({x:z.number(),y:z.number()}),
+                data:z.record(z.string(),z.any().optional())
+            })
+        ),
+        edges: z.array(
+            z.object({
+                source:z.string(),
+                target:z.string(),
+                sourceHandle:z.string().nullish(),
+                targetHandle:z.string().nullish()
+            }),
+        ),
+    }))
+    .mutation(async ({ctx,input})=>{
+        const {id, nodes,edges} = input;
+        const workflow = await prismaClient.workflow.findUniqueOrThrow({
+            where:{
+                id,
+                userId:ctx.auth.user.id,
+            }
+        });
+        // transaction for acid
+        return await prismaClient.$transaction(async (tx)=>{
+            // deleting existing nodes and connections {cascade deletes connections}
+
+            await tx.node.deleteMany({
+                where: {workflowId:id}
+            })
+            // create new nodes
+
+            await tx.node.createMany({
+                data: nodes.map((node)=>({
+                    id:node.id,
+                    workflowId:id,
+                    name:node.type|| "unknown",
+                    type:node.type as NodeType,
+                    position:node.position,
+                    data:node.data||{},
+                }))
+            })
+            // create connections
+            await tx.connections.createMany({
+                data: edges.map((edge)=>({
+                    workflowId:id,
+                    fromNodeId:edge.source,
+                    toNodeId:edge.target,
+                    fromOutput:edge.sourceHandle||"main",
+                    toInput:edge.targetHandle || "main",
+                }))
+            });
+                // this transaction doesnot modify workflow directly just it's conneciton so updatedAt will not updated
+
+            // update workflow's updateAt timestamp for user expericne
+            await tx.workflow.update({
+                where:{
+                    id
+                },
+                data:{
+                    updatedAt:new Date()
+                }
+            })
+            return workflow;
+        })
+    }),
 
     getMany: protectedProcedure
     .input(
