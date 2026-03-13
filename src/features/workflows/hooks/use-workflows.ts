@@ -93,6 +93,22 @@ export const useUpateWorkflow  =()=>{
     }));
 }
 
+
+// hook to update a workflow 
+
+export const useExecuteWorkflow  =()=>{
+   const trpc = useTRPC();
+   
+   return useMutation(
+    trpc.workflow.execute.mutationOptions({
+        onSuccess:(data)=>{
+            toast.success(`Workflow "${data.name}" executed`);
+          },
+        onError:(err)=>{
+            toast.error(`failed to execute workflows ${err.message}`);
+        },
+    }));
+}
 export const useSuspenseWorkflow = (id:string)=>{
     const trpc = useTRPC(); 
     return useSuspenseQuery(trpc.workflow.getOne.queryOptions({id}));

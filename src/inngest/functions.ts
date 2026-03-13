@@ -1,20 +1,34 @@
-import prismaClient from "@/lib/db";
+import { ja } from "date-fns/locale";
 import { inngest } from "./client";
-import {generateText} from "ai";
-import { google } from "@ai-sdk/google";
-export const execute = inngest.createFunction(
-    {id:"execute-aiFlow"},
-    {event:"exectue/ai"},
+import { NonRetriableError } from "inngest";
+import prismaClient from "@/lib/db";
 
-    async({event,step})=>{
-      //  await step.sleep("wait-a-moment",'5s');
-        console.log("hit")
-       const response =  await step.ai.wrap("gemini-generate-text",generateText,{
-            model:google("gemini-2.5-flash"),
-            system:"yoii are a helpfull assistant",
-            prompt:"what is 2+2?"
-        })
-        
-        return response.steps;
+export const executeWorkflow = inngest.createFunction({
+    id:"execute-workflow"
+},{event:"workflows/execute.workflow"},async ({
+    event,
+    step
+})=>{
+    // it needs to somehow fetch the workflow that's been executed 
+    // fetch all of nodes sort them topologocallyy run specific type of request
+
+    const workflowId = event.data.workflowId;
+    if(!workflowId){
+        throw new NonRetriableError("the workflow id is missing");
     }
-);
+    
+    const nodes = await step.run("prepare-workflow", async ()=>{
+        const workflow = await prismaClient.workflow.findUniqueOrThrow({
+            where:{
+                id:workflowId
+            },
+            include:{
+                nodes:true,
+                connections:true,
+            }
+        });
+        
+        return workflow.nodes;
+    });
+    return {nodes};
+})
