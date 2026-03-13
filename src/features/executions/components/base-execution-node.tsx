@@ -7,8 +7,7 @@ import { memo, type ReactNode } from "react";
 import { BaseNode, BaseNodeContent } from "@/components/react-flow/base-node";
 import { BaseHandle } from "@/components/react-flow/base-handle";
 import { WorkflowNode } from "@/components/react-flow/workflow-node";
-import  { type NodeStatus, NodeStatusIndicator } from "@/components/react-flow/node-status-indicator";
-//import { type NodeStatus, NodeStatusIndicator } from "@/components/react-flow/node-status-indicator";
+import { type NodeStatus, NodeStatusIndicator } from "@/components/react-flow/node-status-indicator";
 
 interface BaseExecutionNodeProps extends NodeProps {
   icon: LucideIcon | string;
@@ -52,13 +51,12 @@ export const BaseExecutionNode = memo(
         description={description}
         onDelete={handleDelete}
         onSettings={onSettings}
-        showToolbar={true}
       >
         <NodeStatusIndicator
-        status={status}
-        variant="border"
+          status={status}
+          variant="border"
         >
-          <BaseNode  onDoubleClick={onDoubleClick}>
+          <BaseNode status={status} onDoubleClick={onDoubleClick}>
             <BaseNodeContent>
               {typeof Icon === "string" ? (
                 <Image src={Icon} alt={name} width={16} height={16} />
@@ -78,7 +76,7 @@ export const BaseExecutionNode = memo(
               />
             </BaseNodeContent>
           </BaseNode>
-          </NodeStatusIndicator>
+        </NodeStatusIndicator>
       </WorkflowNode>
     )
   },
