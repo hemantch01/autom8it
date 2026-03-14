@@ -16,11 +16,13 @@ export const workFlowRouter = createTRPCRouter({
                 userId:ctx.auth.user.id
             }
         });
+        // now i want the 
         
         await inngest.send({
             name:"workflows/execute.workflow",
             data:{
                 workflowId:input.id,
+                
             }
         });
 
