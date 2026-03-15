@@ -229,7 +229,7 @@ export const workFlowRouter = createTRPCRouter({
                 id:connection.id,
                 source: connection.fromNodeId,
                 target: connection.toNodeId,
-                sourceHandle: connection.fromNodeId,
+                sourceHandle: connection.fromOutput,
                 targetHandle: connection.toInput,
             }
         ))
